@@ -285,6 +285,34 @@
   font-weight: 600;
 }
 
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.theme-toggle-text {
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.theme-toggle-btn:hover .theme-toggle-text {
+  color: var(--text-main);
+}
+
+.mobile-nav-link.theme-toggle-link {
+  margin-top: 0.35rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.85rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.mobile-nav-link.theme-toggle-link:hover {
+  background-color: var(--primary-light);
+}
+
 /* --------------------------------------------------------------------------
    Badges (Status & Priority)
    -------------------------------------------------------------------------- */

@@ -97,9 +97,12 @@ export function Navbar({
             className="action-icon-btn theme-toggle-btn"
             onClick={toggleTheme}
             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            aria-label="Toggle theme"
+            aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+            role="switch"
+            aria-checked={theme === 'dark'}
           >
             {theme === 'dark' ? <IconSun size={18} /> : <IconMoon size={18} />}
+            <span className="theme-toggle-text">{theme === 'dark' ? 'Light' : 'Dark'}</span>
           </button>
 
           <button
@@ -150,6 +153,20 @@ export function Navbar({
           >
             <IconRefreshCw size={18} />
             <span>Reset Demo Data</span>
+          </button>
+          <button
+            type="button"
+            className="mobile-nav-link theme-toggle-link"
+            onClick={() => {
+              toggleTheme();
+              setMobileMenuOpen(false);
+            }}
+            role="switch"
+            aria-checked={theme === 'dark'}
+            aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+          >
+            {theme === 'dark' ? <IconSun size={18} /> : <IconMoon size={18} />}
+            <span>{theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}</span>
           </button>
         </div>
       )}

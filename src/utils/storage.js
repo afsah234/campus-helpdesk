@@ -66,7 +66,19 @@ export function generateTicketId() {
  */
 export function getSavedTheme() {
   try {
-    return localStorage.getItem(THEME_STORAGE_KEY) || 'light';
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    if (saved === 'dark' || saved === 'light') {
+      return saved;
+    }
+    // Check system OS dark mode preference for first-time visitors
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+    ) {
+      return 'dark';
+    }
+    return 'light';
   } catch {
     return 'light';
   }
