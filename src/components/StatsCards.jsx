@@ -14,12 +14,10 @@ export function StatsCards({
   onFilterByPriority,
 }) {
   const total = tickets.length;
-  const pending = tickets.filter((t) => t.status === 'Pending').length;
-  const inProgress = tickets.filter((t) => t.status === 'In Progress').length;
-  const resolved = tickets.filter((t) => t.status === 'Resolved').length;
-  const urgentCount = tickets.filter(
-    (t) => (t.priority === 'Urgent' || t.priority === 'High') && t.status !== 'Resolved'
-  ).length;
+  const pending = tickets.filter((t) => t && t.status === 'Pending').length;
+  const inProgress = tickets.filter((t) => t && t.status === 'In Progress').length;
+  const resolved = tickets.filter((t) => t && t.status === 'Resolved').length;
+  const urgentCount = tickets.filter((t) => t && t.priority === 'Urgent').length;
 
   const resolutionRate = total > 0 ? Math.round((resolved / total) * 100) : 0;
 
@@ -67,7 +65,7 @@ export function StatsCards({
     {
       id: 'Urgent',
       type: 'priority',
-      label: 'Urgent / High Priority',
+      label: 'Urgent Priority',
       value: urgentCount,
       subtext: 'Requires immediate attention',
       icon: <IconAlertTriangle size={22} />,

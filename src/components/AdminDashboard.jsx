@@ -40,15 +40,16 @@ export function AdminDashboard({
 
   // Filter tickets
   const filtered = tickets.filter((t) => {
-    const term = searchTerm.toLowerCase().trim();
+    if (!t) return false;
+    const term = (searchTerm || '').toLowerCase().trim();
     const matchSearch =
       !term ||
-      t.id.toLowerCase().includes(term) ||
-      t.title.toLowerCase().includes(term) ||
-      t.description.toLowerCase().includes(term) ||
-      t.studentName.toLowerCase().includes(term) ||
-      t.studentId.toLowerCase().includes(term) ||
-      t.location.toLowerCase().includes(term);
+      (t.id || '').toLowerCase().includes(term) ||
+      (t.title || '').toLowerCase().includes(term) ||
+      (t.description || '').toLowerCase().includes(term) ||
+      (t.studentName || '').toLowerCase().includes(term) ||
+      (t.studentId || '').toLowerCase().includes(term) ||
+      (t.location || '').toLowerCase().includes(term);
 
     const matchStatus = statusFilter === 'All' || t.status === statusFilter;
     const matchCategory = categoryFilter === 'All' || t.category === categoryFilter;
@@ -212,7 +213,7 @@ export function AdminDashboard({
         activeStatusFilter={statusFilter}
         onFilterByStatus={(status) => {
           setStatusFilter(status);
-          if (status !== 'All') setPriorityFilter('All');
+          setPriorityFilter('All');
         }}
         activePriorityFilter={priorityFilter}
         onFilterByPriority={(pri) => {
@@ -458,10 +459,10 @@ export function AdminDashboard({
                       <td className="td-status">
                         <div className="status-dropdown-wrapper">
                           <select
-                            className={`status-select status-color-${ticket.status
+                            className={`status-select status-color-${(ticket.status || 'pending')
                               .toLowerCase()
-                              .replace(' ', '-')}`}
-                            value={ticket.status}
+                              .replace(/\s+/g, '-')}`}
+                            value={ticket.status || STATUSES.PENDING}
                             onChange={(e) => onUpdateStatus(ticket.id, e.target.value)}
                           >
                             <option value={STATUSES.PENDING}>Pending</option>

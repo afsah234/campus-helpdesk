@@ -30,16 +30,17 @@ export function IssueTracker({
   }
 
   const filteredTickets = tickets.filter((t) => {
+    if (!t) return false;
     // Search match
-    const term = searchTerm.toLowerCase().trim();
+    const term = (searchTerm || '').toLowerCase().trim();
     const matchesSearch =
       !term ||
-      t.id.toLowerCase().includes(term) ||
-      t.title.toLowerCase().includes(term) ||
-      t.description.toLowerCase().includes(term) ||
-      t.studentName.toLowerCase().includes(term) ||
-      t.studentId.toLowerCase().includes(term) ||
-      t.location.toLowerCase().includes(term);
+      (t.id || '').toLowerCase().includes(term) ||
+      (t.title || '').toLowerCase().includes(term) ||
+      (t.description || '').toLowerCase().includes(term) ||
+      (t.studentName || '').toLowerCase().includes(term) ||
+      (t.studentId || '').toLowerCase().includes(term) ||
+      (t.location || '').toLowerCase().includes(term);
 
     // Status match
     const matchesStatus = statusFilter === 'All' || t.status === statusFilter;

@@ -4,25 +4,35 @@ const TICKETS_STORAGE_KEY = 'campus_helpdesk_tickets_v1';
 const THEME_STORAGE_KEY = 'campus_helpdesk_theme_v1';
 
 /**
- * Retrieve all tickets from localStorage. If no tickets are found,
+ * Return a deep clone of the initial sample tickets to prevent
+ * in-memory mutation of module constants.
+ */
+function getInitialSampleTickets() {
+  return JSON.parse(JSON.stringify(INITIAL_SAMPLE_TICKETS));
+}
+
+/**
+ * Retrieve all tickets from localStorage. If no entry exists in storage,
  * initialize with sample tickets and persist them.
  */
 export function getStoredTickets() {
   try {
     const raw = localStorage.getItem(TICKETS_STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(INITIAL_SAMPLE_TICKETS));
-      return INITIAL_SAMPLE_TICKETS;
+    if (raw === null) {
+      const initial = getInitialSampleTickets();
+      localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(initial));
+      return initial;
     }
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
-      localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(INITIAL_SAMPLE_TICKETS));
-      return INITIAL_SAMPLE_TICKETS;
+    if (!Array.isArray(parsed)) {
+      const initial = getInitialSampleTickets();
+      localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(initial));
+      return initial;
     }
     return parsed;
   } catch (error) {
     console.error('Failed to load tickets from localStorage:', error);
-    return INITIAL_SAMPLE_TICKETS;
+    return getInitialSampleTickets();
   }
 }
 
@@ -44,21 +54,50 @@ export function saveTicketsToStorage(tickets) {
  */
 export function resetTicketsStorage() {
   try {
-    localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(INITIAL_SAMPLE_TICKETS));
-    return INITIAL_SAMPLE_TICKETS;
+    const initial = getInitialSampleTickets();
+    localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(initial));
+    return initial;
   } catch (error) {
     console.error('Failed to reset tickets in localStorage:', error);
-    return INITIAL_SAMPLE_TICKETS;
+    return getInitialSampleTickets();
   }
 }
 
 /**
  * Generate a unique, readable Ticket ID (e.g. TKT-2026-8492)
  */
-export function generateTicketId() {
+export function generateTicketId(existingTickets = []) {
   const currentYear = new Date().getFullYear();
-  const randomPart = Math.floor(1000 + Math.random() * 9000);
-  return `TKT-${currentYear}-${randomPart}`;
+  const existingIds = new Set(
+    Array.isArray(existingTickets) && existingTickets.length > 0
+      ? existingTickets.map((t) => t?.id)
+      : []
+  );
+
+  // If existingTickets was not passed or empty, check localStorage
+  if (existingIds.size === 0) {
+    try {
+      const raw = localStorage.getItem(TICKETS_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          parsed.forEach((t) => t?.id && existingIds.add(t.id));
+        }
+      }
+    } catch {
+      // Ignore storage read error during ID check
+    }
+  }
+
+  let newId;
+  let attempts = 0;
+  do {
+    const randomPart = Math.floor(1000 + Math.random() * 9000);
+    newId = `TKT-${currentYear}-${randomPart}`;
+    attempts++;
+  } while (existingIds.has(newId) && attempts < 100);
+
+  return newId;
 }
 
 /**

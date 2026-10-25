@@ -154,6 +154,14 @@ function App() {
         return t;
       })
     );
+
+    // Keep selectedTicket in sync if open
+    setSelectedTicket((prev) =>
+      prev && ticketIds.includes(prev.id)
+        ? { ...prev, status: newStatus, updatedAt: new Date().toISOString() }
+        : prev
+    );
+
     addToast(`${ticketIds.length} ticket(s) updated to ${newStatus}.`);
   };
 
@@ -176,6 +184,14 @@ function App() {
     }
   };
 
+  // View change handler ensuring clean navigation state
+  const handleViewChange = (view) => {
+    if (view === 'tickets') {
+      setSearchQueryForTracker('');
+    }
+    setActiveView(view);
+  };
+
   // Navigation from submit success to tracking
   const handleNavigateToTrack = (ticketId) => {
     setSearchQueryForTracker(ticketId);
@@ -193,7 +209,7 @@ function App() {
       {/* Top Navigation */}
       <Navbar
         activeView={activeView}
-        setActiveView={setActiveView}
+        setActiveView={handleViewChange}
         pendingCount={pendingCount}
         theme={theme}
         toggleTheme={toggleTheme}
@@ -213,7 +229,7 @@ function App() {
           <IssueTracker
             tickets={tickets}
             onSelectTicket={(ticket) => setSelectedTicket(ticket)}
-            onNavigateToSubmit={() => setActiveView('submit')}
+            onNavigateToSubmit={() => handleViewChange('submit')}
             initialSearch={searchQueryForTracker}
           />
         )}
