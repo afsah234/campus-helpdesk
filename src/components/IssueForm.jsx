@@ -113,8 +113,16 @@ export function IssueForm({ onSubmitSuccess, onNavigateToTrack }) {
     }
   };
 
+  const resetFileInput = () => {
+    const fileInput = document.getElementById('attachmentInput');
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  };
+
   const removeAttachment = () => {
     setFormData((prev) => ({ ...prev, attachmentName: '' }));
+    resetFileInput();
   };
 
   const handleSubmit = (e) => {
@@ -166,6 +174,7 @@ export function IssueForm({ onSubmitSuccess, onNavigateToTrack }) {
       setIsSubmitting(false);
       setSubmittedTicket(newTicket);
       setFormData(initialFormState);
+      resetFileInput();
     }, 300);
   };
 
@@ -476,6 +485,7 @@ export function IssueForm({ onSubmitSuccess, onNavigateToTrack }) {
               onClick={() => {
                 setFormData(initialFormState);
                 setErrors({});
+                resetFileInput();
               }}
             >
               Reset Form
